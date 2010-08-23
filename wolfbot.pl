@@ -15,7 +15,7 @@ my $ircname = 'Wolfbot to manage IRC Werewolf games';
 #IRC Server to connect to
 my $ircserver = '';
 my $port = 6667;
-#Channel to play the game in. This should be a dedicated channel
+#Channel to play the game in. This should be a dedicated channel. Include '#'
 my $mainchannel = '';
 #Nickname of user who can then give administrative orders to the bot
 my $ownernick = '';
