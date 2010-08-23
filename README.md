@@ -1,7 +1,10 @@
 About
 =====
-wolfbot-pl is an advanced Perl IRC implementation of the game of Werewolf (AKA Mafia), using POE::Component::IRC. The bot supports:
-* a variety of roles: next to the standard Villager, Wolves and Seer we have a Village Idiot, Doppleganger, Angel and Finder.
+wolfbot-pl is an advanced Perl IRC implementation of the game of Werewolf (AKA
+Mafia), using POE::Component::IRC. The bot supports:
+
+* a variety of roles: next to the standard Villager, Wolves and Seer we have a
+Village Idiot, Doppleganger, Angel and Finder.
 * IRC administration, no need to reboot the bot for small configuration changes
 * game themes
 * anonymous mode!
@@ -16,7 +19,9 @@ Make sure to fill in the connection details at the start of the program.
 
 Authors
 =======
-Started by Will "MageKing17" Howard for the monkkonen.net (now instantkingdom.com) community.
+Started by Will "MageKing17" Howard for the monkkonen.net (now
+instantkingdom.com) community.
+
 Contributions and maintenance by Vincent "Amarth" Verhoeven.
 
 Contact
