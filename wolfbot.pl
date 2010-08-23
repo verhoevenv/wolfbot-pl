@@ -4,7 +4,7 @@
 
 use strict;
 use warnings;
-use POE qw(Component::IRC);
+use POE qw(Component::IRC Component::IRC::Plugin::Connector);
 #use Math::Random::MT qw(srand rand);
 
 ###################
@@ -326,7 +326,7 @@ addlog("Wolflog.txt opened.");
 
 POE::Session->create(
 	package_states => [
-		'main' => [ qw(_default _start irc_001 irc_public irc_msg irc_join irc_nick irc_kick irc_quit irc_notice irc_ping irc_mode irc_ctcp_action irc_disconnected irc_part identify_self auto_rejoin reg_end night_end vote_start day_end) ],
+		'main' => [ qw(_default _start irc_001 irc_public irc_msg irc_join irc_nick irc_kick irc_quit irc_notice irc_ping irc_pong irc_mode irc_ctcp_action irc_disconnected irc_part identify_self auto_rejoin reg_end night_end vote_start day_end lag_o_meter) ],
 	],
 	heap => { irc => $irc },
 );
@@ -343,8 +343,26 @@ sub _start {
 	# and register and connect to the specified server.
 	my $irc_session = $heap->{irc}->session_id();
 	$kernel->post( $irc_session => register => 'all' );
+
+	$heap->{connector} = POE::Component::IRC::Plugin::Connector->new(
+		delay => 60,
+		reconnect => 30,
+		servers => [
+				[$ircserver => $port],
+			   ],
+	);
+
+	$irc->plugin_add( 'Connector' => $heap->{connector} );
+	#$kernel->delay( 'lag_o_meter' => 60 );
 	$kernel->post( $irc_session => connect => [ flood => 1 ] );
 	undef;
+}
+
+sub lag_o_meter {
+	my ($kernel, $heap) = @_[KERNEL,HEAP];
+	print 'Time: ' . time() . ' Lag: ' . $heap->{connector}->lag() . "\n";
+	$kernel->delay( 'lag_o_meter' => 60 );
+	return;
 }
 
 sub irc_001 {
@@ -454,6 +472,13 @@ sub irc_ping {
 	my ($kernel,$sender,$who) = @_[KERNEL,SENDER,ARG0];
 
 #	addlog("Ping! ($who)");
+	undef;
+}
+
+sub irc_pong {
+	my ($kernel,$sender,$who) = @_[KERNEL,SENDER,ARG0];
+
+#	addlog("Pong! ($who)");
 	undef;
 }
 
@@ -994,7 +1019,7 @@ sub night_end {
 				send_notice( $mainchannel, 'The ' . $texts{$mode}{"role_name_doppleganger"} . ' has become a ' . $texts{$mode}{"role_name_wolf"} . '!' );
 				send_notice( $mainchannel, $texts{$mode}{"end_victory_wolves"});
 				send_notice( $mainchannel, $texts{$mode}{"end_game"});
-				my @rolelist = get_role_list();
+				my @rolelist = get_role_list('');
 				send_notice( $mainchannel, 'Roles: ' . join( ', ', @rolelist ));
 				cancelgame();
 			}
